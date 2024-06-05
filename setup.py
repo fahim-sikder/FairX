@@ -12,7 +12,7 @@ LONG_DESCRIPTION = 'A Python package to assess and improve fairness of machine l
 
 # Setting up
 setup(
-    name="triplex",
+    name="fairx",
     version=VERSION,
     author="Md Fahim Sikder",
     author_email="<fahimsikder01@gmail.com>",

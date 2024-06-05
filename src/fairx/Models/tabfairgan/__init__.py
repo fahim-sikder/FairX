@@ -1,0 +1,1 @@
+from .main_tabfairgan import *

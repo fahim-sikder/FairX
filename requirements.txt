@@ -8,3 +8,4 @@ torchvision
 shap
 fairlearn
 aif360
+xgboost
