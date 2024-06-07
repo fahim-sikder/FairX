@@ -1,6 +1,6 @@
 import fairx
-from fairx.Models import ThresholdAlgorithm
-from fairx.DataLoader import BaseDataClass
+from fairx.models.postprocessing import ThresholdAlgorithm
+from fairx.dataset import BaseDataClass
 
 dataset_name = 'Compass' # Compass or Adult-Income
 sensitive_attr = 'sex'

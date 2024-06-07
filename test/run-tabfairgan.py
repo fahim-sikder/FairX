@@ -1,6 +1,6 @@
 import fairx
-from fairx.Models import TabFairGAN
-from fairx.DataLoader import BaseDataClass
+from fairx.models.inprocessing import TabFairGAN
+from fairx.dataset import BaseDataClass
 
 dataset_name = 'Adult-Income' # Compass or Adult-Income
 sensitive_attr = 'sex'

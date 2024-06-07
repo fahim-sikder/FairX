@@ -12,6 +12,10 @@ from sklearn.datasets import fetch_openml
 
 import pathlib
 
+import warnings
+warnings.filterwarnings('ignore')
+
+
 class BaseDataClass():
 
     def __init__(self, dataset_name, sensitive_attr = None, attach_target = False):
@@ -27,6 +31,10 @@ class BaseDataClass():
 
             data_id = 1590
 
+        elif self.dataset_name == 'diabetes':
+
+            data_id = 43874
+
         elif self.dataset_name == 'Credit-card':
 
             data_id = 42477
@@ -38,6 +46,10 @@ class BaseDataClass():
         elif self.dataset_name == 'Compass':
 
             data_id = 42193
+
+        elif self.dataset_name == 'Intersectional-bias-assesment':
+
+            data_id = 45040
 
         self.raw_data = fetch_openml(
                 data_id=data_id,
@@ -80,7 +92,7 @@ class BaseDataClass():
 
             self.target = (self.raw_data.target == ">50K") * 1
 
-        elif dataset_name == 'Compass':
+        elif dataset_name == 'Compass' or dataset_name == 'Intersectional-bias-assesment':
 
             self.target = (self.raw_data.target == "1") * 1
             
