@@ -9,3 +9,6 @@ shap
 fairlearn
 aif360
 xgboost
+synthcity
+pydantic==1.10.15
+pytest

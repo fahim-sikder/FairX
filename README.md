@@ -16,6 +16,7 @@ This includes data loader, custom dataset support, different fairness models, an
 
 - [x] TabFairGAN
 - [ ] Fairgan
+- [x] Decaf
 - [ ] FairDisco
 - [ ] FLDGMs
 ### Post-processing
