@@ -35,7 +35,7 @@ class BaseDataClass():
 
             data_id = 43874
 
-        elif self.dataset_name == 'Credit-card':
+        elif self.dataset_name == 'Credit-card': # X2 = Gender
 
             data_id = 42477
             
@@ -92,15 +92,19 @@ class BaseDataClass():
 
             self.target = (self.raw_data.target == ">50K") * 1
 
+            self.target = self.target.to_numpy()
+
         elif dataset_name == 'Compass' or dataset_name == 'Intersectional-bias-assesment':
 
             self.target = (self.raw_data.target == "1") * 1
+
+            self.target = self.target.to_numpy()
             
         else:
 
              self.target = self.raw_data.target
 
-        self.sensitive_data = self.data[self.sensitive_attr]
+        self.sensitive_data = self.data[self.sensitive_attr].to_numpy()
 
         self.num_data = self.data[self.num_feat].values
 
@@ -118,9 +122,9 @@ class BaseDataClass():
         
         num_tf = self.numeric_transformer.fit_transform(self.num_data)
 
-        catenated_data = np.hstack((num_tf, cat_tf.toarray()))
+        self.catenated_data = np.hstack((num_tf, cat_tf.toarray()))
 
-        return catenated_data
+        return self.categorical_transformer, self.numeric_transformer, self.catenated_data
 
     def split_data(self, dataset):
 

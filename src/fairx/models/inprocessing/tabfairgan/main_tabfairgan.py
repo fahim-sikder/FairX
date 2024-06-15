@@ -53,14 +53,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import QuantileTransformer
 
+import time
+
 from .utils import *
+from fairx.models.baseclass import BaseModelClass
 
 
-class TabFairGAN():
+class TabFairGAN(BaseModelClass):
 
     def __init__(self, under_previlaged= None, y_desire = None):
 
-        super().__init__()
+        super(BaseModelClass, self).__init__()
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -69,7 +72,7 @@ class TabFairGAN():
         self.Y_desire = y_desire
 
 
-    def data_preprocess_for_tabfairgan(self, dataset_module):
+    def preprocess_data(self, dataset_module):
 
         self.batch_size = 256
 
@@ -123,13 +126,22 @@ class TabFairGAN():
         return self.categorical_transformer_tab, self.numeric_transformer_tab, self.input_dim, self.discrete_columns_ordereddict, dataset_module.num_feat, self.train_dl, \
             self.data_train, self.data_test, self.S_start_index, self.Y_start_index, self.underpriv_index, self.priv_index, self.undesire_index, self.desire_index
 
+    def get_original_data(self, df_transformed, df_orig, ohe, scaler):
+        df_ohe_int = df_transformed[:, :df_orig.select_dtypes(['float', 'integer']).shape[1]]
+        df_ohe_int = scaler.inverse_transform(df_ohe_int)
+        df_ohe_cats = df_transformed[:, df_orig.select_dtypes(['float', 'integer']).shape[1]:]
+        df_ohe_cats = ohe.inverse_transform(df_ohe_cats)
+        df_int = pd.DataFrame(df_ohe_int, columns=df_orig.select_dtypes(['float', 'integer']).columns)
+        df_cat = pd.DataFrame(df_ohe_cats, columns=df_orig.select_dtypes('category').columns)
+        return pd.concat([df_int, df_cat], axis=1)
+
     def fit(self, dataset_module, batch_size, epochs):
 
         fair_epochs=10
         lamda=0.5
 
         ohe, scaler, input_dim, discrete_columns, continuous_columns, train_dl, data_train, data_test, S_start_index, Y_start_index, underpriv_index, priv_index, \
-                undesire_index, desire_index = self.data_preprocess_for_tabfairgan(dataset_module)
+                undesire_index, desire_index = self.preprocess_data(dataset_module)
 
         self.generator = Generator(input_dim, continuous_columns, discrete_columns).to(self.device)
         self.critic = Critic(input_dim).to(self.device)
@@ -206,3 +218,11 @@ class TabFairGAN():
                 cur_step += 1
 
         print(f'Training Complete!')
+
+        df_generated = self.generator(torch.randn(size=(32561, input_dim), device=self.device)).cpu().detach().numpy()
+
+        generated_tf = self.get_original_data(df_generated, dataset_module.data, ohe, scaler)
+
+        generated_tf.to_csv(f'{time.time():.2f}-generated_data-{dataset_module.sensitive_attr}.csv', index = False)
+
+        print(f'generated data saved!')

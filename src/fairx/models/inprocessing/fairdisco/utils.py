@@ -1,3 +1,6 @@
+#This code is adapted from https://github.com/SoftWiser-group/FairDisCo/tree/main
+
+
 import os
 import random
 import torch
@@ -15,28 +18,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import roc_auc_score
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from sklearn.utils import shuffle
-
-
-import xgboost as xgb
-from fairlearn.metrics import demographic_parity_ratio, equalized_odds_ratio
 
 import warnings
 warnings.filterwarnings('ignore')
-
-
-class LoadData():
-
-    def __init__(self, dataset_name):
-
-        super(LoadData, self).__init__()
-
-        self.dataset_name = dataset_name
-
-        
-
-    pass
 
 def setSeed(seed=2022):
     random.seed(seed)
@@ -105,71 +90,25 @@ def getDataset(df, S, Y, num_train):
 
     return train_data, test_data, D
 
-def fairloadAdult(pro_att):
+def loadAdult(dataset, pro_att):
     """
     Adult Census Income: Individual information from 1994 U.S. census. Goal is predicting income >$50,000.
     Protected Attribute: sex / race
     """
     cols = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', \
-        'relationship', 'race', 'sex', 'capital-gain', 'capital-loss','hours-per-week', 'native-country', 'salary']
+        'relationship', 'race', 'sex', 'capital-gain', 'capital-loss','hours-per-week', 'native-country', 'class']
 
-    df_train = pd.read_csv('./data/Adult/adult.data', names=cols)
-    df_test = pd.read_csv('./data/Adult/adult.test', names=cols, skiprows=1)
+    # df_train = pd.read_csv('./data/Adult/adult.data', names=cols)
+    # df_test = pd.read_csv('./data/Adult/adult.test', names=cols, skiprows=1)
 
-
-    df = pd.concat([df_train, df_test], ignore_index=True)
-    df = df.apply(lambda v: v.astype(str).str.strip() if v.dtype == "object" else v)
-    # print('train_size {}, test_size {}'.format(num_train, num_test))
-
-    male_df = df[df['sex']=='Male'][:16192]
-    female_df = df[df['sex']=='Female']
-
-    num_train = 26000
-    # num_test = df_test.shape[0]
-
-    train_set = pd.concat([male_df[:num_train//2], female_df[:num_train//2]], ignore_index = True)
-
-    test_set = pd.concat([male_df[num_train//2:], female_df[num_train//2:]], ignore_index = True)
-
-    train_set = train_set.sample(n = len(train_set))
-
-    test_set = test_set.sample(n = len(test_set))
-
-    df = pd.concat([train_set, test_set], ignore_index=True)
+    df_train = dataset.data.iloc[:int(len(dataset.data)*.8), :]
     
-    df['age'] = pd.cut(df['age'], bins=8, labels=False)
-    df['hours-per-week'] = pd.cut(df['hours-per-week'], bins=8, labels=False)
-    df['fnlwgt'] = pd.cut(np.log(df['fnlwgt']), bins=8, labels=False)
-    df[['capital-gain', 'capital-loss']] = getBinary(df, ['capital-gain', 'capital-loss'])
-
-    if pro_att == 'sex':
-        S = (df['sex'] == 'Male').values.astype(int)
-        del df['sex']
-
-    if pro_att == 'race':
-        S = (df['race'] == 'Black').values.astype(int)
-        del df['race']
-    
-    Y = (df['salary'].apply(lambda x: x == '<=50K' or x == '<=50K.')).values.astype(int)
-    del df['salary']
-
-    return getDataset(df, S, Y, num_train)
-
-def loadAdult(pro_att):
-    """
-    Adult Census Income: Individual information from 1994 U.S. census. Goal is predicting income >$50,000.
-    Protected Attribute: sex / race
-    """
-    cols = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', \
-        'relationship', 'race', 'sex', 'capital-gain', 'capital-loss','hours-per-week', 'native-country', 'salary']
-
-    df_train = pd.read_csv('./data/Adult/adult.data', names=cols)
-    df_test = pd.read_csv('./data/Adult/adult.test', names=cols, skiprows=1)
+    df_test = dataset.data.iloc[int(len(dataset.data)*.8):, :]
 
     num_train = df_train.shape[0]
     num_test = df_test.shape[0]
     df = pd.concat([df_train, df_test], ignore_index=True)
-    df = df.apply(lambda v: v.astype(str).str.strip() if v.dtype == "object" else v)
+    df = df.apply(lambda v: v.astype(str).str.strip() if v.dtype == "object" or v.dtype == "category" else v)
     print('train_size {}, test_size {}'.format(num_train, num_test))
     
     df['age'] = pd.cut(df['age'], bins=8, labels=False)
@@ -185,31 +124,40 @@ def loadAdult(pro_att):
         S = (df['race'] == 'Black').values.astype(int)
         del df['race']
     
-    Y = (df['salary'].apply(lambda x: x == '<=50K' or x == '<=50K.')).values.astype(int)
-    del df['salary']
+    Y = (df['class'].apply(lambda x: x == '<=50K' or x == '<=50K.')).values.astype(int)
+    del df['class']
 
     return getDataset(df, S, Y, num_train)
 
-def loadCompas(pro_att):
+def loadCompas(dataset, pro_att):
     """
     Compas: Contains criminal history of defendants. Goal predicting re-offending in future
     Protected Attribute: sex / race
     """
-    df = pd.read_csv('./data/compas-scores-two-years.csv')
-    drop_cols = ['id','name','first','last','compas_screening_date',
-                'dob', 'juv_fel_count', 'decile_score',
-                'juv_misd_count','juv_other_count','days_b_screening_arrest',
-                'c_jail_in','c_jail_out','c_case_number','c_offense_date','c_arrest_date',
-                'c_days_from_compas','c_charge_desc','is_recid','r_case_number','r_charge_degree',
-                'r_days_from_arrest','r_offense_date','r_charge_desc','r_jail_in','r_jail_out',
-                'violent_recid','is_violent_recid','vr_case_number','vr_charge_degree','vr_offense_date',
-                'vr_charge_desc','type_of_assessment','decile_score','score_text','screening_date',
-                'v_type_of_assessment','v_decile_score','v_score_text','v_screening_date','in_custody',
-                'out_custody','start','end','event']
-    df = df.drop(drop_cols, axis=1)
+    # df = pd.read_csv('./data/compas-scores-two-years.csv')
+    # drop_cols = ['id','name','first','last','compas_screening_date',
+    #             'dob', 'juv_fel_count', 'decile_score',
+    #             'juv_misd_count','juv_other_count','days_b_screening_arrest',
+    #             'c_jail_in','c_jail_out','c_case_number','c_offense_date','c_arrest_date',
+    #             'c_days_from_compas','c_charge_desc','is_recid','r_case_number','r_charge_degree',
+    #             'r_days_from_arrest','r_offense_date','r_charge_desc','r_jail_in','r_jail_out',
+    #             'violent_recid','is_violent_recid','vr_case_number','vr_charge_degree','vr_offense_date',
+    #             'vr_charge_desc','type_of_assessment','decile_score','score_text','screening_date',
+    #             'v_type_of_assessment','v_decile_score','v_score_text','v_screening_date','in_custody',
+    #             'out_custody','start','end','event']
+    # df = df.drop(drop_cols, axis=1)
+
+    df_train = dataset.data.iloc[:int(len(dataset.data)*.8), :]
     
-    df = shuffle(df)
-    num_train = int(0.8*df.shape[0])
+    df_test = dataset.data.iloc[int(len(dataset.data)*.8):, :]
+    
+    # df = shuffle(df)
+    # num_train = int(0.8*df.shape[0])
+
+    num_train = df_train.shape[0]
+    num_test = df_test.shape[0]
+    df = pd.concat([df_train, df_test], ignore_index=True)
+    df = df.apply(lambda v: v.astype(str).str.strip() if v.dtype == "object" or v.dtype == "category" else v)
     print('train_size {}, test_size {}'.format(num_train, df.shape[0]-num_train))
     
     df['age'] = pd.cut(df['age'], bins=5, labels=False)
@@ -219,9 +167,9 @@ def loadCompas(pro_att):
         S = (df['sex'] == 'Male').values.astype(int)
         del df['sex']
 
-    if pro_att == 'race':
-        S = (df['race'] == 'African-American').values.astype(int)
-        del df['race']
+    if pro_att == 'race_African-American':
+        S = (df['race_African-American'] == 'race_African-American').values.astype(int)
+        del df['race_African-American']
     
     Y = df['two_year_recid'].values.astype(int)
     del df['two_year_recid']
@@ -355,7 +303,7 @@ def loadGerman():
     return getDataset(df, S, Y, num_train)
 
 def loadMnist(color=True):
-    transform = transforms.Compose([transforms.ToPILImage(),transforms.Resize(64), transforms.CenterCrop(64),transforms.ToTensor()])
+    transform = transforms.Compose([transforms.ToPILImage(),transforms.Scale(64), transforms.CenterCrop(64),transforms.ToTensor()])
     train_data = torchvision.datasets.MNIST(root='./data', train=True, download=True)
     test_data = torchvision.datasets.MNIST(root='./data', train=False, download=True)
 
@@ -399,30 +347,28 @@ def loadMnist(color=True):
     
     return train_data, test_data
 
-all_datasets = ['Adult-sex', 'Adult-race', 'Health', 'Bank', 'German', 'Creadit', 'Student', 'Compas-sex', 'Compas-race', 'Adult-fair-sex']
+all_datasets = ['Adult-sex', 'Adult-race', 'Health', 'Bank', 'German', 'Creadit', 'Student', 'Compas-sex', 'Compas-race']
 
 def load_dataset(dataset):
-    assert dataset in all_datasets
-    if dataset == 'Adult-sex':
-        train_data, test_data, D = loadAdult(pro_att='sex')
-    elif dataset == 'Adult-race':
-        train_data, test_data, D = loadAdult(pro_att='race')
-    elif dataset == 'Adult-fair-sex':
-        train_data, test_data, D = fairloadAdult(pro_att='sex')
-    elif dataset == 'Compas-sex':
-        train_data, test_data, D = loadCompas(pro_att='sex')
-    elif dataset == 'Compas-race':
-        train_data, test_data, D = loadCompas(pro_att='race')
-    elif dataset == 'German':
-        train_data, test_data, D = loadGerman()
-    elif dataset == 'Health':
-        train_data, test_data, D = loadHealth()
-    elif dataset == 'Bank':
-        train_data, test_data, D = loadBank()
-    elif dataset == 'Credit':
-        train_data, test_data, D = loadCredit()
-    elif dataset == 'Student':
-        train_data, test_data, D = loadStudent()
+    
+    if dataset.dataset_name == 'Adult-Income' and dataset.sensitive_attr == 'sex':
+        train_data, test_data, D = loadAdult(dataset, pro_att='sex')
+    elif dataset.dataset_name == 'Adult-Income' and dataset.sensitive_attr == 'race':
+        train_data, test_data, D = loadAdult(dataset, pro_att='race')
+    elif dataset.dataset_name == 'Compass' and dataset.sensitive_attr == 'sex':
+        train_data, test_data, D = loadCompas(dataset, pro_att='sex')
+    elif dataset.dataset_name == 'Compass' and dataset.sensitive_attr == 'race_African-American':
+        train_data, test_data, D = loadCompas(dataset, pro_att='race_African-American')
+    # elif dataset == 'German':
+    #     train_data, test_data, D = loadGerman()
+    # elif dataset == 'Health':
+    #     train_data, test_data, D = loadHealth()
+    # elif dataset == 'Bank':
+    #     train_data, test_data, D = loadBank()
+    # elif dataset == 'Credit':
+    #     train_data, test_data, D = loadCredit()
+    # elif dataset == 'Student':
+    #     train_data, test_data, D = loadStudent()
     return train_data, test_data, D
 
 def computeMI(c, d, n_neighbors=5):
@@ -464,9 +410,9 @@ def computeMI(c, d, n_neighbors=5):
     
     return max(0, mi)
 
-eval_col_name = ['yauc', 'sauc', 'dp', 'di', 'ynn', 'zs_mi', 'ys_mi', 'precsn_scr', 'rec_score', 'acc_scr', 'f1_scr', 'auroc']
+eval_col_name = ['yauc', 'sauc', 'dp', 'di', 'ynn', 'zs_mi', 'ys_mi']
 
-def evaluate(Z_train, Z_test, S_train, S_test, Y_train, Y_test, cls_name='lr'):
+def evaluate(Z_train, Z_test, S_train, S_test, Y_train, Y_test, cls_name='rf'):
     assert cls_name in {'rf', 'lr'}
     clf = RandomForestClassifier() if cls_name == 'rf' else LogisticRegression()
 
@@ -479,7 +425,7 @@ def evaluate(Z_train, Z_test, S_train, S_test, Y_train, Y_test, cls_name='lr'):
 
     # sauc
     clf = clf.fit(Z_train, S_train)
-    S_test_hat = clf.predict_proba(Z_test)[:,0]
+    S_test_hat = clf.predict_proba(Z_test)[:,1]
     sauc = roc_auc_score(S_test, S_test_hat)
     if sauc < 0.5: sauc = roc_auc_score(S_test, 1-S_test_hat)
 
@@ -503,66 +449,5 @@ def evaluate(Z_train, Z_test, S_train, S_test, Y_train, Y_test, cls_name='lr'):
     neighbor_idx = knn.kneighbors(Z_test, return_distance=False)
     nbr_test_Y_hat = Y_test_hat[neighbor_idx]
     ynn = np.abs(Y_test_hat.reshape(-1,1) - nbr_test_Y_hat).mean()
-    
-    # precision score, recall score, accuracy score, f1 score
-    
-    clf = clf.fit(Z_train, Y_train)
-    Y_test_hat = clf.predict_proba(Z_test)[:,1]
-    Y_hat=clf.predict(Z_test)
-    
-    prs_scr = precision_score(Y_test, Y_hat)
-    
-    rec_scr = recall_score(Y_test, Y_hat)
-    
-    acc_scr = accuracy_score(Y_test, Y_hat)
-    
-    f1_scr = f1_score(Y_test, Y_hat)
 
-    auroc = roc_auc_score(Y_test, Y_hat)
-
-    return np.array([yauc, sauc, dp, di, ynn, zs_mi, ys_mi, prs_scr, rec_scr, acc_scr, f1_scr, auroc])
-
-def data_utility_metrics(x_train, x_test, y_train, y_test):
-
-    clf = xgb.XGBClassifier(objective="binary:logistic", random_state=42)
-
-    clf = clf.fit(x_train, y_train)
-    Y_test_hat = clf.predict_proba(x_test)[:,1]
-    Y_hat=clf.predict(x_test)
-    
-    prs_scr = precision_score(y_test, Y_hat)
-    
-    rec_scr = recall_score(y_test, Y_hat)
-    
-    acc_scr = accuracy_score(y_test, Y_hat)
-    
-    f1_scr = f1_score(y_test, Y_hat)
-
-    auroc = roc_auc_score(y_test, Y_hat)
-
-    output = {
-
-        'Precision' : prs_scr,
-        'Recall' : rec_scr,
-        'Accuracy' : acc_scr,
-        'F1 Score': f1_scr,
-        'Auroc' : auroc
-        
-    }
-
-    return output
-
-def fairness_metrics(x_train, x_test, y_train, y_test, s):
-
-    clf = xgb.XGBClassifier(objective="binary:logistic", random_state=42)
-
-    clf = clf.fit(x_train, y_train)
-
-    Y_hat=clf.predict(x_test)
-
-    demo_pari = demographic_parity_ratio(y_test, Y_hat, sensitive_features=s)
-
-    eq_odd = equalized_odds_ratio(y_test, Y_hat, sensitive_features=s)
-
-    return {'demo parity ratio' : demo_pari,
-           'Equalized Odd': eq_odd}
+    return np.array([yauc, sauc, dp, di, ynn, zs_mi, ys_mi])

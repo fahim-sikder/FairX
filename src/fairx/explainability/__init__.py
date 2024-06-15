@@ -1,1 +1,1 @@
-from .explain_prediction import explain_prediction
+from .explain_prediction import ExplainUtils

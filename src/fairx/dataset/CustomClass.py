@@ -1,3 +1,6 @@
+
+# from .BaseClass import BaseDataClass
+
 import numpy as np
 import pandas as pd
 
@@ -12,46 +15,44 @@ from sklearn.datasets import fetch_openml
 
 import pathlib
 
-class BaseDataClassOpenML():
+import warnings
+warnings.filterwarnings('ignore')
 
-    def __init__(self, dataset_name, sensitive_attr = None):
+from sklearn.preprocessing import LabelEncoder
+
+class CustomDataClass():
+
+    def __init__(self, dataset_name, sensitive_attr, target_attr, columns = None):
 
         super().__init__()
 
-        self.dataset_name = dataset_name
+        self.dataset_name = 'custom'
 
-        if self.dataset_name == 'Adult-Income':
-
-            data_id = 1590
-
-        elif self.dataset_name == 'Credit-card':
-
-            data_id = 42477
-            
-        elif self.dataset_name == 'Boston':
-            
-            data_id = 531
-
-        elif self.dataset_name == 'Compass':
-
-            data_id = 42193
-
-        self.raw_data = fetch_openml(
-                data_id=data_id,
-                cache=True,
-                as_frame=True,
-                return_X_y=False,
-                parser="auto",
-            )
-
-        self.data = self.raw_data.data
+        self.data_path = dataset_name
 
         self.sensitive_attr = sensitive_attr
 
-        self.target_attr = self.raw_data.target_names
+        self.target_attr = target_attr
+
+        self.columns = columns
+
+        self.labelencoder = LabelEncoder()
+
+        if self.columns is None:
+
+            self.data = pd.read_csv(self.data_path)
+
+        else:
+
+            self.data = pd.read_csv(self.data_path, names = self.columns)
+
+        self.target = self.labelencoder.fit_transform(self.data[self.target_attr])
+
+        self.data = self.data.drop(self.target_attr, axis = 1)
 
         self.cat_feat = []
         self.num_feat = []
+
 
         for col in self.data.columns:
     
@@ -69,20 +70,7 @@ class BaseDataClassOpenML():
     
                 self.num_feat.append(col)
 
-
-        if dataset_name == 'Adult-Income':
-
-            self.target = (self.raw_data.target == ">50K") * 1
-
-        elif dataset_name == 'Compass':
-
-            self.target = (self.raw_data.target == "1") * 1
-            
-        else:
-
-             self.target = self.raw_data.target
-
-        self.sensitive_data = self.data[self.sensitive_attr]
+        self.sensitive_data = self.data[self.sensitive_attr].values
 
         self.num_data = self.data[self.num_feat].values
 
@@ -91,27 +79,19 @@ class BaseDataClassOpenML():
         print(f'Data loading complete')
 
     def preprocess_data(self):
+
+        self.categorical_transformer = OneHotEncoder(handle_unknown="ignore")
+
+        self.numeric_transformer = StandardScaler()
+
+        cat_tf = self.categorical_transformer.fit_transform(self.cat_data)
         
-        categorical_transformer = Pipeline(
-            [
-                ("ohe", OneHotEncoder(handle_unknown="ignore")),
-            ]
-        )
+        num_tf = self.numeric_transformer.fit_transform(self.num_data)
 
-        numeric_transformer = Pipeline(
-            steps=[
-                ("scaler", StandardScaler()),
-            ]
-        )
+        self.catenated_data = np.hstack((num_tf, cat_tf.toarray()))
 
-        cat_tf = categorical_transformer.fit_transform(self.cat_data)
+        return self.categorical_transformer, self.numeric_transformer, self.catenated_data
         
-        num_tf = numeric_transformer.fit_transform(self.num_data)
-
-        catenated_data = np.hstack((num_tf, cat_tf.toarray()))
-
-        return catenated_data
-
     def split_data(self, dataset):
 
         (X_train, X_test, y_train, y_test, A_train, A_test) = train_test_split(

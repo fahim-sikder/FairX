@@ -33,32 +33,55 @@
 # SOFTWARE
 
 
-from fairx.dataset import BaseDataClass
+# stdlib
+import hashlib
+import platform
+from pathlib import Path
+from typing import Any, Union, Callable, NoReturn, TextIO
+import logging
+import os
 
-from synthcity.plugins import Plugin, Plugins
-from synthcity.plugins.core.dataloader import GenericDataLoader
 
-class Decaf():
+# third party
+import cloudpickle
+import pandas as pd
 
-    def __init__(self):
+# third party
+from loguru import logger
 
-        super().__init__()
 
-    def fit(self, dataset_module, batch_size, n_iter):
+def save(model: Any) -> bytes:
+    return cloudpickle.dumps(model)
 
-        self.dataset_module = dataset_module
 
-        self.decaf_loader = GenericDataLoader(self.dataset_module.data,
-                                            target_column=self.dataset_module.target_attr[0],
-                                            sensitive_columns=self.dataset_module.sensitive_attr)
+def load(buff: bytes) -> Any:
+    return cloudpickle.loads(buff)
 
-        self.train_data, self.test_data = self.decaf_loader.train(), self.decaf_loader.test()
 
-        self.model = Plugins().get("decaf", batch_size = batch_size, n_iter = n_iter)
+def save_to_file(path: Union[str, Path], model: Any) -> Any:
+    path = Path(path)
+    ppath = path.absolute().parent
 
-        print(f'Training Started')
+    if not ppath.exists():
+        ppath.mkdir(parents=True, exist_ok=True)
 
-        self.model.fit(self.train_data)
+    with open(path, "wb") as f:
+        return cloudpickle.dump(model, f)
 
-        return self.model
 
+def load_from_file(path: Union[str, Path]) -> Any:
+    with open(path, "rb") as f:
+        return cloudpickle.load(f)
+
+
+def dataframe_hash(df: pd.DataFrame) -> str:
+    """Dataframe hashing, used for caching/backups"""
+    cols = sorted(list(df.columns))
+    return str(abs(pd.util.hash_pandas_object(df[cols].fillna(0)).sum()))
+
+
+def dataframe_cols_hash(df: pd.DataFrame) -> str:
+    df.columns = df.columns.map(str)
+    cols = "--".join(list(sorted(df.columns)))
+
+    return hashlib.sha256(cols.encode()).hexdigest()

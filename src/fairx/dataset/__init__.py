@@ -1,2 +1,2 @@
-from .CustomClass import *
-from .BaseClass import *
+from .CustomClass import CustomDataClass
+from .BaseClass import BaseDataClass

@@ -56,7 +56,7 @@ class CorrRemover():
 
         self.remove_intensity = remove_intensity
 
-        self.corr_remover = CorrelationRemover(sensitive_feature_ids = self.sensitive_attr_to_remove, alpha = self.remove_intensity)
+        self.corr_remover = CorrelationRemover(sensitive_feature_ids = [self.sensitive_attr_to_remove], alpha = self.remove_intensity)
 
     def fit(self, dataset):
 

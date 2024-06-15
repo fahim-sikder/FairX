@@ -22,7 +22,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=install_requires_pack,
-    keywords=['python', 'fair data', 'fairness', 'evaluation', 'doublex'],
+    keywords=['python', 'fair data', 'fairness', 'evaluation', 'fairx'],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",

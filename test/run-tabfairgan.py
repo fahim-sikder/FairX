@@ -12,4 +12,4 @@ y_desire = '>50K'
 
 tabfairgan = TabFairGAN(under_prev, y_desire)
 
-tabfairgan.fit(data_module, batch_size = 256, epochs = 50)
+tabfairgan.fit(data_module, batch_size = 256, epochs = 5)

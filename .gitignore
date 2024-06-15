@@ -3,3 +3,5 @@ data
 build
 src/fairx.egg-info
 **/__pycache__/
+**/checkpoints/
+.*csv
