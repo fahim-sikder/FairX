@@ -69,6 +69,12 @@ Intersectional Bias on `Adult-Income` dataset.
 
 ![Intersectional Bias](fig/ib.png)
 
+### Model's performance on Data utiliy vs Fairness
+
+Here, we have compared all the model in our benchmarking tools on Data utility vs Fairness metrics. For the data utlity, we calculate the Accuracy and for the fairness, we measure Demographic Parity Ration (DPR) and Equilized Odds Ratio (EOR), and plot them in 3d.
+
+![Fairness vs Data utlity](fig/fairnessvsdata.png)
+
 More results coming soon!
 
 ## References
