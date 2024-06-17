@@ -6,13 +6,13 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(f"{here}/requirements.txt") as f:
     install_requires_pack = [line.strip() for line in f]
 
-VERSION = '0.0.1'
-DESCRIPTION = 'Fairness Evaluation Suite'
+VERSION = '0.0.2'
+DESCRIPTION = 'Fairness Benchmarking Tool'
 LONG_DESCRIPTION = 'A Python package to assess and improve fairness of machine learning models.'
 
 # Setting up
 setup(
-    name="fairx",
+    name='fairx',
     version=VERSION,
     author="Md Fahim Sikder",
     author_email="<fahimsikder01@gmail.com>",

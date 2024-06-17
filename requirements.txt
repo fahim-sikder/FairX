@@ -45,7 +45,6 @@ entrypoint2==1.1
 exceptiongroup==1.2.1
 executing==2.0.1
 fairlearn==0.10.0
-fairx @ file:///home/fahim/code/FairX
 fastai==2.7.15
 fastcore==1.5.44
 fastdownload==0.0.7
