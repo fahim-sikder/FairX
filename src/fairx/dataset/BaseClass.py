@@ -61,11 +61,19 @@ class BaseDataClass():
 
         if attach_target:
 
-            self.data = self.raw_data.frame
+            self.tmp_data = self.raw_data.frame
 
         else:         
                     
-            self.data = self.raw_data.data
+            self.tmp_data = self.raw_data.data
+
+        self.data = self.tmp_data.copy()
+
+        self.simple_imputer = SimpleImputer(strategy='most_frequent')
+        
+        for col in self.data.columns:
+            
+            self.data[[col]] = self.simple_imputer.fit_transform(self.data[[col]])
 
         self.sensitive_attr = sensitive_attr
 
@@ -111,6 +119,7 @@ class BaseDataClass():
         self.cat_data = self.data[self.cat_feat].values
 
         print(f'Data loading complete')
+
 
     def preprocess_data(self):
         

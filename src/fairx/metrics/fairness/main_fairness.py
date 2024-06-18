@@ -25,7 +25,7 @@ class FairnessUtils():
     
         eq_odd = equalized_odds_ratio(test_y, Y_hat, sensitive_features=test_s)
     
-        output =  {'demo parity ratio' : demo_pari,
-               'Equalized Odd': eq_odd}
+        output =  {'Demographic Parity Ratio' : demo_pari,
+               'Equalized Odd Ratio': eq_odd}
     
         return output

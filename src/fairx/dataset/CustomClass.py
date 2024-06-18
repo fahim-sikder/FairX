@@ -40,11 +40,21 @@ class CustomDataClass():
 
         if self.columns is None:
 
-            self.data = pd.read_csv(self.data_path)
+            self.tmp_data = pd.read_csv(self.data_path)
 
         else:
 
-            self.data = pd.read_csv(self.data_path, names = self.columns)
+            self.tmp_data = pd.read_csv(self.data_path, names = self.columns)
+
+        self.data = self.tmp_data.copy()
+
+        self.simple_imputer = SimpleImputer(strategy='most_frequent')
+        
+        for col in self.data.columns:
+            
+            self.data[[col]] = self.simple_imputer.fit_transform(self.data[[col]])
+
+        self.frame_data = self.data.copy()
 
         self.target = self.labelencoder.fit_transform(self.data[self.target_attr])
 

@@ -13,3 +13,10 @@ def setSeed(seed=2022):
     torch.cuda.manual_seed_all(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     torch.backends.cudnn.deterministic = True
+
+
+# def split_data(data, target, sensitive_attr):
+
+#     splitted_data = 
+
+#     return splitted_data
