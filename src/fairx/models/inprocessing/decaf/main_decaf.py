@@ -38,15 +38,29 @@ from fairx.dataset import BaseDataClass
 from synthcity.plugins import Plugin, Plugins
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
+from fairx.dataset import CustomDataClass
+from fairx.metrics import SyntheticEvaluation
+
+import warnings
+warnings.filterwarnings('ignore')
+
+import time
+
 class Decaf():
 
-    def __init__(self):
+    def __init__(self, dataset_module, batch_size, n_iter, generated_sample_size):
 
         super().__init__()
 
-    def fit(self, dataset_module, batch_size, n_iter):
-
         self.dataset_module = dataset_module
+
+        self.batch_size = batch_size
+
+        self.n_iter = n_iter
+
+        self.generated_sample_size = generated_sample_size
+
+    def fit(self):
 
         self.decaf_loader = GenericDataLoader(self.dataset_module.data,
                                             target_column=self.dataset_module.target_attr[0],
@@ -54,11 +68,29 @@ class Decaf():
 
         self.train_data, self.test_data = self.decaf_loader.train(), self.decaf_loader.test()
 
-        self.model = Plugins().get("decaf", batch_size = batch_size, n_iter = n_iter)
+        self.model = Plugins().get("decaf", batch_size = self.batch_size, n_iter = self.n_iter)
 
         print(f'Training Started')
 
         self.model.fit(self.train_data)
+
+        generated_tf = self.model.generate(self.generated_sample_size)
+
+        generated_tf_decaf = generated_tf.dataframe()
+
+        dataframe_name = f'{time.time():.2f}-Decaf-{self.dataset_module.dataset_name}-{self.dataset_module.sensitive_attr}.csv'
+    
+        generated_tf_decaf.to_csv(f'{dataframe_name}', index = False)
+
+        fake_data_class = CustomDataClass(dataframe_name, self.dataset_module.sensitive_attr, self.dataset_module.target_attr, attach_target = self.dataset_module.attach_target)
+
+        synth = SyntheticEvaluation(self.dataset_module, fake_data_class)
+
+        print(synth.calculate_alpha_precision())
+
+        print(f'Training Completed')
+
+        print(f'Generated Sample Saved')
 
         return self.model
 

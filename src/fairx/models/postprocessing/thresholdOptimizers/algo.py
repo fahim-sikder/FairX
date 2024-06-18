@@ -38,10 +38,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE
 
+# TODO: Integrate fairx.metrics 
+
 from fairlearn.postprocessing import ThresholdOptimizer
 from fairlearn.metrics import demographic_parity_ratio, equalized_odds_ratio
 
+from fairx.metrics import DataUtilsMetrics
+
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.model_selection import train_test_split
 import xgboost as xgb
 
 
@@ -50,15 +56,36 @@ import xgboost as xgb
 
 class ThresholdAlgorithm():
 
-    def __init__(self):
+    def __init__(self, data_module):
 
         super().__init__()
 
-        pass
+        self.res = {'Methods': 'Threshold Optimizer'}
 
-    def fit(self, dataset):
+        self.data_module = data_module
 
-        X_train, X_test, y_train, y_test, A_train, A_test = dataset
+        self.enc = OrdinalEncoder()
+
+        self.df = self.data_module.data.copy()
+
+        self.col_list = self.df.columns.to_list()
+
+        for col in self.col_list:
+    
+            self.df[[col]] = self.enc.fit_transform(self.df[[col]])
+
+        self.target = self.df[self.data_module.target_attr].values
+
+        self.df = self.df.drop(self.data_module.target_attr, axis=1)
+
+        self.sensitive_attr_val = self.df[self.data_module.sensitive_attr].values
+
+        self.splitted_data = train_test_split(self.df.values, self.target, self.sensitive_attr_val, test_size=0.3, random_state=42, stratify=self.target)
+
+
+    def fit(self):
+
+        X_train, X_test, y_train, y_test, A_train, A_test = self.splitted_data
 
         pipeline_cls = Pipeline(
             steps=[
@@ -73,16 +100,7 @@ class ThresholdAlgorithm():
 
         y_pred_opt_before = pipeline_cls.predict(X_test)
 
-        m_dpr_opt = demographic_parity_ratio(y_test, y_pred_opt_before, sensitive_features=A_test)
-        
-        m_eqo_opt = equalized_odds_ratio(y_test, y_pred_opt_before, sensitive_features=A_test)
-        
-        print(f'Value of demographic parity ratio (before post-processing): {round(m_dpr_opt, 2)}')
-        
-        print(f'Value of equal odds ratio (before post-processing): {round(m_eqo_opt, 2)}') 
-        
 
-        
         threshold_optimizer = ThresholdOptimizer(
             estimator=pipeline_cls,
             constraints="demographic_parity",
@@ -94,10 +112,17 @@ class ThresholdAlgorithm():
 
         y_pred_opt = threshold_optimizer.predict(X_test, sensitive_features=A_test)
 
+        self.data_utils = DataUtilsMetrics(self.splitted_data)
+
+        self.res.update(self.data_utils.evaluate_utility())
+
         m_dpr_opt = demographic_parity_ratio(y_test, y_pred_opt, sensitive_features=A_test)
         
         m_eqo_opt = equalized_odds_ratio(y_test, y_pred_opt, sensitive_features=A_test)
-        
-        print(f'Value of demographic parity ratio (after post-processing): {round(m_dpr_opt, 2)}')
-        
-        print(f'Value of equal odds ratio (after post-processing): {round(m_eqo_opt, 2)}') 
+
+        fair_output =  {'Demographic Parity Ratio' : m_dpr_opt,
+       'Equalized Odd Ratio': m_eqo_opt}
+
+        self.res.update(fair_output)
+
+        return self.res

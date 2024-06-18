@@ -58,10 +58,15 @@ import time
 from .utils import *
 from fairx.models.baseclass import BaseModelClass
 
+from fairx.dataset import CustomDataClass
+from fairx.metrics import SyntheticEvaluation
+
 
 class TabFairGAN(BaseModelClass):
 
     def __init__(self, under_previlaged= None, y_desire = None):
+
+    # def __init__(self, dataset_module, batch_size, epochs, under_previlaged= None, y_desire = None):
 
         super(BaseModelClass, self).__init__()
 
@@ -71,10 +76,17 @@ class TabFairGAN(BaseModelClass):
 
         self.Y_desire = y_desire
 
+        # self.dataset_module = dataset_module
+
+        
+
+        # self.epochs = epochs
+
 
     def preprocess_data(self, dataset_module):
 
         self.batch_size = 256
+        
 
         self.categorical_transformer_tab = OneHotEncoder(handle_unknown="ignore")
 
@@ -137,11 +149,17 @@ class TabFairGAN(BaseModelClass):
 
     def fit(self, dataset_module, batch_size, epochs):
 
+        self.dataset_module = dataset_module
+
+        self.batch_size = batch_size
+
+        self.epochs = epochs
+
         fair_epochs=10
         lamda=0.5
 
         ohe, scaler, input_dim, discrete_columns, continuous_columns, train_dl, data_train, data_test, S_start_index, Y_start_index, underpriv_index, priv_index, \
-                undesire_index, desire_index = self.preprocess_data(dataset_module)
+                undesire_index, desire_index = self.preprocess_data(self.dataset_module)
 
         self.generator = Generator(input_dim, continuous_columns, discrete_columns).to(self.device)
         self.critic = Critic(input_dim).to(self.device)
@@ -155,13 +173,13 @@ class TabFairGAN(BaseModelClass):
         # loss = nn.BCELoss()
         critic_losses = []
         cur_step = 0
-        for i in range(epochs):
+        for i in range(self.epochs):
             # j = 0
             print("epoch {}".format(i + 1))
             ############################
-            if i + 1 <= (epochs - fair_epochs):
+            if i + 1 <= (self.epochs - fair_epochs):
                 print("training for accuracy")
-            if i + 1 > (epochs - fair_epochs):
+            if i + 1 > (self.epochs - fair_epochs):
                 print("training for fairness")
             for data in train_dl:
                 data[0] = data[0].to(self.device)
@@ -170,13 +188,13 @@ class TabFairGAN(BaseModelClass):
                 for k in range(crit_repeat):
                     # training the critic
                     self.crit_optimizer.zero_grad()
-                    fake_noise = torch.randn(size=(batch_size, input_dim), device=self.device).float()
+                    fake_noise = torch.randn(size=(self.batch_size, input_dim), device=self.device).float()
                     fake = self.generator(fake_noise)
     
                     crit_fake_pred = self.critic(fake.detach())
                     crit_real_pred = self.critic(data[0])
     
-                    epsilon = torch.rand(batch_size, input_dim, device=self.device, requires_grad=True)
+                    epsilon = torch.rand(self.batch_size, input_dim, device=self.device, requires_grad=True)
                     gradient = get_gradient(self.critic, data[0], fake.detach(), epsilon)
                     gp = gradient_penalty(gradient)
     
@@ -190,10 +208,10 @@ class TabFairGAN(BaseModelClass):
                     critic_losses += [mean_iteration_critic_loss]
     
                 #############################
-                if i + 1 <= (epochs - fair_epochs):
+                if i + 1 <= (self.epochs - fair_epochs):
                     # training the generator for accuracy
                     self.gen_optimizer.zero_grad()
-                    fake_noise_2 = torch.randn(size=(batch_size, input_dim), device=self.device).float()
+                    fake_noise_2 = torch.randn(size=(self.batch_size, input_dim), device=self.device).float()
                     fake_2 = self.generator(fake_noise_2)
                     crit_fake_pred = self.critic(fake_2)
     
@@ -204,10 +222,10 @@ class TabFairGAN(BaseModelClass):
                     self.gen_optimizer.step()
     
                 ###############################
-                if i + 1 > (epochs - fair_epochs):
+                if i + 1 > (self.epochs - fair_epochs):
                     # training the generator for fairness
                     self.gen_optimizer_fair.zero_grad()
-                    fake_noise_2 = torch.randn(size=(batch_size, input_dim), device=self.device).float()
+                    fake_noise_2 = torch.randn(size=(self.batch_size, input_dim), device=self.device).float()
                     fake_2 = self.generator(fake_noise_2)
     
                     crit_fake_pred = self.critic(fake_2)
@@ -221,8 +239,16 @@ class TabFairGAN(BaseModelClass):
 
         df_generated = self.generator(torch.randn(size=(32561, input_dim), device=self.device)).cpu().detach().numpy()
 
-        generated_tf = self.get_original_data(df_generated, dataset_module.data, ohe, scaler)
+        generated_tf = self.get_original_data(df_generated, self.dataset_module.data, ohe, scaler)
 
-        generated_tf.to_csv(f'{time.time():.2f}-generated_data-{dataset_module.sensitive_attr}.csv', index = False)
+        csv_file_name = f'{time.time():.2f}-TabFairGAN-{self.dataset_module.dataset_name}-{self.dataset_module.sensitive_attr}.csv'
+
+        generated_tf.to_csv(f'{csv_file_name}', index = False)
+
+        fake_data_class = CustomDataClass(csv_file_name, self.dataset_module.sensitive_attr, self.dataset_module.target_attr, attach_target = self.dataset_module.attach_target)
+
+        synth = SyntheticEvaluation(self.dataset_module, fake_data_class)
+
+        print(synth.calculate_alpha_precision())
 
         print(f'generated data saved!')

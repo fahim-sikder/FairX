@@ -15,8 +15,15 @@ def setSeed(seed=2022):
     torch.backends.cudnn.deterministic = True
 
 
-# def split_data(data, target, sensitive_attr):
+def add_dict_result(dict1, dict2):
+    
+    for keys in dict1.keys():
 
-#     splitted_data = 
+        if not dict2[keys]:
+    
+            dict1[keys].append('-')
+            
+        else:
+            dict1[keys].append(dict2[keys])
 
-#     return splitted_data
+    return dict1

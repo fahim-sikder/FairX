@@ -22,7 +22,7 @@ from sklearn.preprocessing import LabelEncoder
 
 class CustomDataClass():
 
-    def __init__(self, dataset_name, sensitive_attr, target_attr, columns = None):
+    def __init__(self, dataset_name, sensitive_attr, target_attr, columns = None, attach_target = False):
 
         super().__init__()
 
@@ -58,7 +58,9 @@ class CustomDataClass():
 
         self.target = self.labelencoder.fit_transform(self.data[self.target_attr])
 
-        self.data = self.data.drop(self.target_attr, axis = 1)
+        if not attach_target:
+
+            self.data = self.data.drop(self.target_attr, axis = 1)
 
         self.cat_feat = []
         self.num_feat = []

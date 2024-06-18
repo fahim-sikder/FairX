@@ -22,6 +22,8 @@ class BaseDataClass():
 
         super().__init__()
 
+        self.attach_target = attach_target
+
         self.cat_feat = []
         self.num_feat = []
 
@@ -59,7 +61,7 @@ class BaseDataClass():
                 parser="auto",
             )
 
-        if attach_target:
+        if self.attach_target:
 
             self.tmp_data = self.raw_data.frame
 
