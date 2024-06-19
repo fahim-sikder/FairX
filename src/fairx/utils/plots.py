@@ -86,3 +86,26 @@ def visualize_tsne(ori_data, fake_data, save_fig = False):
     if save_fig:
     
         plt.savefig(f'{time.time():.2f}-tsne.png', dpi = 300)
+
+## Plotting Intersectional bias
+
+def plot_intersectional_bias(df, sensitive_attr = [], target_attr = None, save_fig = False):
+
+    """
+    Input: df: pandas.DataFrame
+           sensitive_attr: list of protected attributes
+           target_attr: target attribute from df
+           save_fig: boolean, if True, plot will be saved
+    """
+
+    m = sb.FacetGrid(df, row = sensitive_attr[0], col = sensitive_attr[1])
+    
+    m.map(sb.histplot, target_attr, discrete = True, shrink = .8)
+    
+    plt.tight_layout()
+
+    if save_fig:
+    
+        plt.savefig(f'{time.time():.2f}-ib.png', dpi = 300)
+    
+    plt.show()
