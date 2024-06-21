@@ -68,6 +68,17 @@ class TabFairGAN(BaseModelClass):
 
     # def __init__(self, dataset_module, batch_size, epochs, under_previlaged= None, y_desire = None):
 
+        """
+        TabFairGAN [1] implementation, 
+        
+        Input: 
+        
+        under_previlaged:under privileged feature in the dataset,
+        y_desire: target that needs to optimize
+        
+        [1] Rajabi, Amirarsalan, and Ozlem Ozmen Garibay. "Tabfairgan: Fair tabular data generation with generative adversarial networks." Machine Learning and Knowledge Extraction 4.2 (2022): 488-501.
+        """
+
         super(BaseModelClass, self).__init__()
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'

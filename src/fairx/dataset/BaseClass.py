@@ -17,8 +17,18 @@ warnings.filterwarnings('ignore')
 
 
 class BaseDataClass():
+    """
+    Dataset loader.
+    """
 
     def __init__(self, dataset_name, sensitive_attr = None, attach_target = False):
+
+        """
+        Input: dataset_name: string (currently options are: 'Adult-Income', 'Diabetes', 'Credit-card', 'Boston', 'Compass', 'Intersectional-bias-assesment')
+                sensitive_attr: string, name of the protected attribute
+                attach_target: Boolean, if True, target is attached with the main dataframe.
+
+        """
 
         super().__init__()
 
@@ -33,7 +43,7 @@ class BaseDataClass():
 
             data_id = 1590
 
-        elif self.dataset_name == 'diabetes':
+        elif self.dataset_name == 'Diabetes':
 
             data_id = 43874
 
@@ -138,6 +148,10 @@ class BaseDataClass():
         return self.categorical_transformer, self.numeric_transformer, self.catenated_data
 
     def split_data(self, dataset):
+
+        """
+        Split the dataset, using Sklearn's train_test_split function. Returns the splitted dataset as a tuple
+        """
 
         ## `dataset` is concatenated dataset which contains both numerical and categorical feature
 

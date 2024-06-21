@@ -50,6 +50,22 @@ class Decaf():
 
     def __init__(self, dataset_module, batch_size, n_iter, generated_sample_size):
 
+        """
+        Decaf [1] implementation, 
+
+        Input: 
+        
+        dataset_module: module of BaseDataClass,
+        batch_size: batch size for the model,
+        n_iter: iteration for training,
+        generated_sample_size: (int) number of samples to generate
+
+        Return: trained model
+        
+        [1] Van Breugel, Boris, et al. "Decaf: Generating fair synthetic data using causally-aware generative networks." Advances in Neural Information Processing Systems 34 (2021): 22221-22233.
+        
+        """
+
         super().__init__()
 
         self.dataset_module = dataset_module

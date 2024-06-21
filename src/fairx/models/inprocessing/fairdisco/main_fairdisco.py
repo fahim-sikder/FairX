@@ -12,6 +12,19 @@ class FairDisco(BaseModelClass):
 
     def __init__(self, data_module, beta = 7, epochs = 1000, batch_size = 2048):
 
+        """
+        FairDisco [1] implementation, 
+
+        Input: 
+        
+        dataset_module: module of BaseDataClass,
+        beta: fairness parameter,
+        epochs: iteration for training,
+        batch_size: batch size for training the model
+        
+        [1] Liu, Ji, et al. "Fair representation learning: An alternative to mutual information." Proceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining. 2022.
+        """
+
         super(BaseModelClass, self).__init__()
 
         self.data_module = data_module

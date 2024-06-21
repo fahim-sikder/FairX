@@ -22,13 +22,26 @@ from sklearn.preprocessing import LabelEncoder
 
 class CustomDataClass():
 
-    def __init__(self, dataset_name, sensitive_attr, target_attr, columns = None, attach_target = False):
+    """
+    Custom Dataset loader.
+    """
+
+    def __init__(self, dataset_path, sensitive_attr, target_attr, columns = None, attach_target = False):
+
+        """
+        Input: dataset_path: string (path to the dataset file)
+                sensitive_attr: string, name of the protected attribute
+                target_attr: string, name of the target feature
+                columns: list, list of feature names
+                attach_target: Boolean, if True, target is attached with the main dataframe.
+
+        """
 
         super().__init__()
 
         self.dataset_name = 'custom'
 
-        self.data_path = dataset_name
+        self.data_path = dataset_path
 
         self.sensitive_attr = sensitive_attr
 
@@ -105,6 +118,9 @@ class CustomDataClass():
         return self.categorical_transformer, self.numeric_transformer, self.catenated_data
         
     def split_data(self, dataset):
+        """
+        Split the dataset, using Sklearn's train_test_split function. Returns the splitted dataset as a tuple
+        """
 
         (X_train, X_test, y_train, y_test, A_train, A_test) = train_test_split(
             dataset, self.target, self.sensitive_data, test_size=0.3, random_state=42, stratify=self.target

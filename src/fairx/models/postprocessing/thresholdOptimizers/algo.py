@@ -56,7 +56,16 @@ import xgboost as xgb
 
 class ThresholdAlgorithm():
 
+    """
+    Threshold Optimizer Technique, Post-processing bias removal technique.
+    """
+
     def __init__(self, data_module):
+
+        """
+        Input: data_module, BaseDataClass module
+
+        """
 
         super().__init__()
 
@@ -74,9 +83,15 @@ class ThresholdAlgorithm():
     
             self.df[[col]] = self.enc.fit_transform(self.df[[col]])
 
-        self.target = self.df[self.data_module.target_attr].values
+        if data_module.attach_target:
 
-        self.df = self.df.drop(self.data_module.target_attr, axis=1)
+            self.target = self.df[self.data_module.target_attr].values
+    
+            self.df = self.df.drop(self.data_module.target_attr, axis=1)
+
+        else:
+
+            self.target = self.enc.fit_transform(self.data_module.raw_data.frame[self.data_module.target_attr])
 
         self.sensitive_attr_val = self.df[self.data_module.sensitive_attr].values
 
@@ -84,6 +99,10 @@ class ThresholdAlgorithm():
 
 
     def fit(self):
+
+        """
+        Return: Result in dictionary format
+        """
 
         X_train, X_test, y_train, y_test, A_train, A_test = self.splitted_data
 

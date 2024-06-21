@@ -6,6 +6,11 @@ import torch
 
 
 def setSeed(seed=2022):
+
+    """
+    Utility function for adding seed.
+    """
+    
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -16,6 +21,10 @@ def setSeed(seed=2022):
 
 
 def add_dict_result(dict1, dict2):
+
+    """
+    Utility function to update result dictionary while benchmarking.
+    """
     
     for keys in dict1.keys():
 

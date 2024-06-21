@@ -12,10 +12,8 @@ sensitive_attr = 'sex'
 
 data_module = BaseDataClass(dataset_name, sensitive_attr, False)
 
-_, _, tf_data = data_module.preprocess_data()
+model = ThresholdAlgorithm(data_module)
 
-splitted_data = data_module.split_data(tf_data)
+res = model.fit()
 
-model = ThresholdAlgorithm()
-
-model.fit(splitted_data)
+print(res)

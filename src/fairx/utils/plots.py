@@ -9,6 +9,14 @@ import time
 
 
 def visualize_tsne(ori_data, fake_data, save_fig = False):
+
+    """
+    Visual metrics to see the similarity between data distributions. Used PCA and t-SNE plots.
+
+    Input: ori_data: numpy array, original data
+            fake_data: numpya array, synthetic data
+            save_fig: Boolean, if true, the plot will be saved
+    """
     
     ori_data = np.asarray(ori_data)
 
@@ -92,6 +100,8 @@ def visualize_tsne(ori_data, fake_data, save_fig = False):
 def plot_intersectional_bias(df, sensitive_attr = [], target_attr = None, save_fig = False):
 
     """
+    Plot Intersectional bias in a dataset.
+    
     Input: df: pandas.DataFrame
            sensitive_attr: list of protected attributes
            target_attr: target attribute from df

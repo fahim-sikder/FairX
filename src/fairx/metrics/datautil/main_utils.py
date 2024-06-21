@@ -5,8 +5,19 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 import numpy as np
 
 class DataUtilsMetrics():
+    
+    """
+    DataUtilsMetrics is the class that handles the data utility evaluation metrics. It calculates the Precision, Recall, AUROC, Accuracy and F1 Score. 
+    """
 
     def __init__(self, dataset, enable_categorical = False):
+
+        """
+
+        Input: dataset: spllited dataset in the format of a tuple (train_x, test_x, train_y, test_y, train_s, test_s) 
+
+        Return: Dictionary containing the result (Precision, Recall, Accuracy, F1 Score, and AUROC) 
+        """
 
         super().__init__()
 

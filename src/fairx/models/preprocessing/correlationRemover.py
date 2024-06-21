@@ -53,7 +53,17 @@ from fairx.metrics import FairnessUtils, DataUtilsMetrics
 
 class CorrRemover():
 
+    """
+    Correlation Remover Technique, Pre-processing bias removal technique.
+    """
+
     def __init__(self, data_module, sensitive_attr_to_remove, remove_intensity = 1.0):
+
+        """
+        Input: data_module, BaseDataClass module
+                sensitive_attr_to_remove: string, feature name
+                remove_intensity: intensity of the feature removal, number between 0.0 - 1.0, where 1.0 means the correlation will be removed maximum.
+        """
 
         super().__init__()
 
@@ -75,17 +85,28 @@ class CorrRemover():
     
             self.df[[col]] = self.enc.fit_transform(self.df[[col]])
 
-        self.target = self.df[self.data_module.target_attr].values
+        if data_module.attach_target:
 
-        self.df = self.df.drop(self.data_module.target_attr, axis=1)
+            self.target = self.df[self.data_module.target_attr].values
+    
+            self.df = self.df.drop(self.data_module.target_attr, axis=1)
+
+            self.col_list.remove(self.data_module.target_attr[0])
+
+        else:
+
+            self.target = self.enc.fit_transform(self.data_module.raw_data.frame[self.data_module.target_attr])
 
         self.col_list.remove(self.sensitive_attr_to_remove)
-
-        self.col_list.remove(self.data_module.target_attr[0])
+        
 
         self.corr_remover = CorrelationRemover(sensitive_feature_ids = [self.sensitive_attr_to_remove], alpha = self.remove_intensity)
 
     def fit(self):
+
+        """
+        Return: Repaired dataset, Result
+        """
 
         self.new_df =  self.corr_remover.fit_transform(self.df)
 

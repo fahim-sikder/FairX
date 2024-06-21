@@ -48,7 +48,18 @@ from .OneClass import OneClassLayer
 
 class SyntheticEvaluation():
 
+    """
+    SyntheticEvaluation is the class that handles the Synthetic Data evaluation. It calculates the Alpha-precision, Beta-Recall and Authenticity.
+    """
+
     def __init__(self, ori_data, gen_data, use_cache = True):
+
+        """
+        Input: ori_data: module of BaseDataClass / CustomDataClass
+                gen_data: module of CustomDataClass / BaseDataClass
+
+        Return: Dictionary containing the result (Alpha-precision, Beta-Recall and Authenticity.) 
+        """
 
         super().__init__()
 
