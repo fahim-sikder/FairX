@@ -80,6 +80,7 @@ class VectorDataset(Dataset):
     Helper function, adapted from https://github.com/SoftWiser-group/FairDisCo/blob/main/utils.py
     """
     def __init__(self, X, S, Y):
+        
         self.X = X
         self.S = S
         self.Y = Y
@@ -87,10 +88,11 @@ class VectorDataset(Dataset):
     def __getitem__(self, i):
         
         x, s, y = self.X[i], self.S[i], self.Y[i]
-    
-            return x, s, y
+        
+        return x, s, y
     
     def __len__(self):
+        
         return self.X.shape[0]
 
 class ColorMNIST():
