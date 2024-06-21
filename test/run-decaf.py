@@ -21,13 +21,10 @@ def main(args):
 
     data_module = BaseDataClass(dataset_name, sensitive_attr, True)
 
-    decaf = Decaf()
+    decaf = Decaf(data_module, batch_size = batch_size, n_iter = n_iter, generated_sample_size = 10000)
+    
+    model = decaf.fit()
 
-    model = decaf.fit(data_module, batch_size = batch_size, n_iter = n_iter)
-
-    generated_tf = model.generate(20000)
-
-    generated_tf.dataframe().to_csv(f'{time.time():.2f}-{dataset_name}-{sensitive_attr}.csv', index = False)
 
 print(f'Training_done!')
 
@@ -37,7 +34,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         '--dataset_name',
-        choices=['Adult-Income','Compass'],
+        choices=['Adult-Income','Compass', 'Credit-card'],
         default='Adult-Income',
         type=str)
 
@@ -54,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--n_iter',
         help='epochs',
-        default=100,
+        default=1000,
         type=int)
     
     args = parser.parse_args() 
