@@ -59,6 +59,17 @@ pip install .
 - [x] $\beta-$ recall
 - [x] Authenticity
 
+## Available Dataset
+
+| **Dataset Name**    | **Protected Attribute**      | **Target Attribute** | **Dataset Type** |
+|---------------------|------------------------------|----------------------|------------------|
+| Adult-Income        | sex<br>race                  | class                | Tabular          |
+| Compass             | sex<br>race_African-American | two_year_recid       | Tabular          |
+| Student-performance | sex                          | Pstatus              | Tabular          |
+| Predict-diagnosis   | Sex<br>Race                  | Diagnosis            | Tabular          |
+| ColorMNIST          | color                        | class                | Image            |
+| CelebA              | Eyeglasses                   | Gender               | Image            |
+
 ## Usage
 
 ### Dataset loading
