@@ -5,7 +5,7 @@ from fairx.dataset import BaseDataClass
 dataset_name = 'Adult-Income' # Compass or Adult-Income
 sensitive_attr = 'sex'
 
-data_module = BaseDataClass(dataset_name, sensitive_attr, True)
+data_module = BaseDataClass(dataset_name, sensitive_attr, attach_target = True)
 
 under_prev = 'Female'
 y_desire = '>50K'

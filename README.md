@@ -81,7 +81,7 @@ dataset_name = 'Adult-Income'
 sensitive_attr = 'sex'
 attach_target = True
 
-data_class = BaseDataClass(dataset_name, sensitive_attr, attach_target)
+data_class = BaseDataClass(dataset_name, sensitive_attr, attach_target = attach_target)
 
 print(data_class.data.head())
 ```
@@ -112,7 +112,7 @@ dataset_name = 'Adult-Income'
 sensitive_attr = 'sex'
 attach_target = True
 
-data_class = BaseDataClass(dataset_name, sensitive_attr, attach_target)
+data_class = BaseDataClass(dataset_name, sensitive_attr, attach_target = attach_target)
 
 under_prev = 'Female'
 y_desire = '>50K'
@@ -124,7 +124,30 @@ tabfairgan.fit(data_class, batch_size = 256, epochs = 5)
 
 ### Evaluation Utility
 
-Coming Soon!
+```python
+from fairx.dataset import BaseDataClass
+from fairx.metrics import FairnessUtils, DataUtilsMetrics
+
+dataset_name = 'Adult-Income'
+sensitive_attr = 'sex'
+attach_target = False
+
+data_class = BaseDataClass(dataset_name, sensitive_attr, attach_target = attach_target)
+
+_, _, tf_data = data_module.preprocess_data()
+
+splitted_data = data_module.split_data(tf_data)
+
+## Data Utility
+data_utils = DataUtilsMetrics(splitted_data)
+utils_res = data_utils.evaluate_utility()
+print(utils_res)
+
+## Fairness
+fairness_eval = FairnessUtils(splitted_data)
+fairness_res = fairness_eval.evaluate_fairness()
+print(fairness_res)
+```
 
 ## Results
 

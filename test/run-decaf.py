@@ -19,7 +19,7 @@ def main(args):
     n_iter = args.n_iter
 
 
-    data_module = BaseDataClass(dataset_name, sensitive_attr, True)
+    data_module = BaseDataClass(dataset_name, sensitive_attr, attach_target = True)
 
     decaf = Decaf(data_module, batch_size = batch_size, n_iter = n_iter, generated_sample_size = 10000)
     

@@ -10,7 +10,7 @@ np.random.seed(42)
 dataset_name = 'Adult-Income' # Compass or Adult-Income
 sensitive_attr = 'sex'
 
-data_module = BaseDataClass(dataset_name, sensitive_attr, False)
+data_module = BaseDataClass(dataset_name, sensitive_attr, attach_target = False)
 
 model = ThresholdAlgorithm(data_module)
 

@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import time
 
+import plotly.express as plotly_express
+
 
 def visualize_tsne(ori_data, fake_data, save_fig = False):
 
@@ -119,3 +121,31 @@ def plot_intersectional_bias(df, sensitive_attr = [], target_attr = None, save_f
         plt.savefig(f'{time.time():.2f}-ib.png', dpi = 300)
     
     plt.show()
+
+
+## 3d plot to show the fairness vs utility
+
+def make_3d_plot_fairness_utility(plot_df, x_axis_feature, y_axis_feature, z_axis_feature, save_fig = False):
+
+    """
+    Plot Fairness vs Data utility in different Methods;
+
+    Input: plot_df: Pandas Dataframe, containing information about methods, and metrics
+            x_axis_feature: Dataframe column name,
+            y_axis_feature: Dataframe column name,
+            z_axis_feature: Dataframe column name,
+            save_fig: Boolean, if True, figure will be saved
+    """
+
+    figure = plotly_express.scatter_3d(plot_df,
+                     x=x_axis_feature, y=y_axis_feature,
+                     z=z_axis_feature, color="Methods", 
+                     title="Fairness vs Data Utility")
+     
+    figure.update_layout(showlegend=True)
+
+    if save_fig:
+
+        figure.write_image(f'{time.time():.2f}-benchmarking-fig.png')
+     
+    figure.show()
