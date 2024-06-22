@@ -34,7 +34,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         '--dataset_name',
-        choices=['Adult-Income','Compass', 'Credit-card'],
+        choices=['Adult-Income','Compass', 'Student-performance', 'Predict-diagnosis'],
         default='Adult-Income',
         type=str)
 

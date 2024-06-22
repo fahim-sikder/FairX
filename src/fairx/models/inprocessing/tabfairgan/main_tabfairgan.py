@@ -87,51 +87,87 @@ class TabFairGAN(BaseModelClass):
 
         self.Y_desire = y_desire
 
-        # self.dataset_module = dataset_module
-
-        
-
-        # self.epochs = epochs
-
 
     def preprocess_data(self, dataset_module):
 
         self.batch_size = 256
-        
+
+        self.cat_feat = []
+
+        self.num_feat = []
 
         self.categorical_transformer_tab = OneHotEncoder(handle_unknown="ignore")
 
         self.numeric_transformer_tab = QuantileTransformer(n_quantiles=2000, output_distribution='uniform')
 
-        self.cat_tf_tab = self.categorical_transformer_tab.fit_transform(dataset_module.cat_data)
+        self.data = dataset_module.raw_data.frame.copy()
+
+        for col in self.data.columns:
+
+            if(self.data[col].dtype == 'object'):
+    
+                self.cat_feat.append(col)
         
-        self.num_tf_tab = self.numeric_transformer_tab.fit_transform(dataset_module.num_data)
+                self.data[col] = self.data[col].astype('category')
+    
+            elif(self.data[col].dtype == 'category'):
+    
+                self.cat_feat.append(col)
+    
+            else:
+    
+                self.num_feat.append(col)
+                
+
+        self.num_data = self.data[self.num_feat].values
+
+        self.cat_data = self.data[self.cat_feat].values
+    
+        self.cat_tf_tab = self.categorical_transformer_tab.fit_transform(self.cat_data)
+        
+        self.num_tf_tab = self.numeric_transformer_tab.fit_transform(self.num_data)
 
         self.catenated_data = np.hstack((self.num_tf_tab, self.cat_tf_tab.toarray()))
 
         self.cat_lens = [i.shape[0] for i in self.categorical_transformer_tab.categories_]
 
-        self.discrete_columns_ordereddict = OrderedDict(zip(dataset_module.cat_feat, self.cat_lens))
+        self.discrete_columns_ordereddict = OrderedDict(zip(self.cat_feat, self.cat_lens))
 
-        self.S_start_index = len(dataset_module.num_feat) + sum(
+        self.S_start_index = len(self.num_feat) + sum(
             list(self.discrete_columns_ordereddict.values())[:list(self.discrete_columns_ordereddict.keys()).index(dataset_module.sensitive_attr)])
         
-        self.Y_start_index = len(dataset_module.num_feat) + sum(
-            list(self.discrete_columns_ordereddict.values())[:list(self.discrete_columns_ordereddict.keys()).index(dataset_module.target_attr[0])])
-
         if self.categorical_transformer_tab.categories_[list(self.discrete_columns_ordereddict.keys()).index(dataset_module.sensitive_attr)][0] == self.S_under:
             self.underpriv_index = 0
             self.priv_index = 1
         else:
             self.underpriv_index = 1
             self.priv_index = 0
-            
-        if self.categorical_transformer_tab.categories_[list(self.discrete_columns_ordereddict.keys()).index(dataset_module.target_attr[0])][0] == self.Y_desire:
-            self.desire_index = 0
-            self.undesire_index = 1
+
+        if self.data[dataset_module.target_attr[0]].dtype == 'category':
+        
+            self.Y_start_index = len(dataset_module.num_feat) + sum(
+                list(self.discrete_columns_ordereddict.values())[:list(self.discrete_columns_ordereddict.keys()).index(dataset_module.target_attr[0])])
+                
+            if self.categorical_transformer_tab.categories_[list(self.discrete_columns_ordereddict.keys()).index(dataset_module.target_attr[0])][0] == self.Y_desire:
+                self.desire_index = 0
+                self.undesire_index = 1
+            else:
+                self.desire_index = 1
+                self.undesire_index = 0
+        
+
         else:
-            self.desire_index = 1
-            self.undesire_index = 0
+
+            self.Y_start_index = self.num_feat.index(dataset_module.target_attr[0])
+
+            if self.Y_desire == 1:
+
+                self.desire_index = 1
+                self.undesire_index = 0
+
+            else:
+                self.desire_index = 0
+                self.undesire_index = 1 
 
         self.input_dim = self.catenated_data.shape[1]
         
@@ -146,7 +182,7 @@ class TabFairGAN(BaseModelClass):
         self.train_ds = TensorDataset(self.torch_data)
         self.train_dl = DataLoader(self.train_ds, batch_size = self.batch_size, drop_last=True)
 
-        return self.categorical_transformer_tab, self.numeric_transformer_tab, self.input_dim, self.discrete_columns_ordereddict, dataset_module.num_feat, self.train_dl, \
+        return self.categorical_transformer_tab, self.numeric_transformer_tab, self.input_dim, self.discrete_columns_ordereddict, self.num_feat, self.train_dl, \
             self.data_train, self.data_test, self.S_start_index, self.Y_start_index, self.underpriv_index, self.priv_index, self.undesire_index, self.desire_index
 
     def get_original_data(self, df_transformed, df_orig, ohe, scaler):
@@ -250,7 +286,7 @@ class TabFairGAN(BaseModelClass):
 
         df_generated = self.generator(torch.randn(size=(32561, input_dim), device=self.device)).cpu().detach().numpy()
 
-        generated_tf = self.get_original_data(df_generated, self.dataset_module.data, ohe, scaler)
+        generated_tf = self.get_original_data(df_generated, self.data, ohe, scaler)
 
         csv_file_name = f'{time.time():.2f}-TabFairGAN-{self.dataset_module.dataset_name}-{self.dataset_module.sensitive_attr}.csv'
 

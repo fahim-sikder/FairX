@@ -115,7 +115,7 @@ class BaseDataClass():
 
             self.target = self.target.to_numpy()
 
-        elif dataset_name == 'Compass' or dataset_name == 'Intersectional-bias-assesment':
+        elif dataset_name == 'Compass' or dataset_name == 'Predict-diagnosis':
 
             self.target = (self.raw_data.target == "1") * 1
 
@@ -132,6 +132,8 @@ class BaseDataClass():
         self.cat_data = self.data[self.cat_feat].values
 
         print(f'Data loading complete')
+
+        print(f'Target attribute: {self.target_attr[0]}')
 
 
     def preprocess_data(self):
