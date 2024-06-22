@@ -21,10 +21,11 @@ class BaseDataClass():
     Dataset loader.
     """
 
-    def __init__(self, dataset_name, sensitive_attr = None, attach_target = False):
+    def __init__(self, dataset_name, sensitive_attr = None, target_feature = None, attach_target = False):
 
         """
-        Input: dataset_name: string (currently options are: 'Adult-Income', 'Diabetes', 'Credit-card', 'Boston', 'Compass', 'Intersectional-bias-assesment')
+        Input: dataset_name: string (currently options are: 'Adult-Income', 'Student-performance', 'Predict-diagnosis', 'Compass')
+                target_feature: list, name of the target feature
                 sensitive_attr: string, name of the protected attribute
                 attach_target: Boolean, if True, target is attached with the main dataframe.
 
@@ -37,29 +38,23 @@ class BaseDataClass():
         self.cat_feat = []
         self.num_feat = []
 
+        self.target_feature = target_feature
+
         self.dataset_name = dataset_name
 
         if self.dataset_name == 'Adult-Income':
 
             data_id = 1590
 
-        elif self.dataset_name == 'Diabetes':
-
-            data_id = 43874
-
-        elif self.dataset_name == 'Credit-card': # X2 = Gender
-
-            data_id = 42477
-            
-        elif self.dataset_name == 'Boston':
-            
-            data_id = 531
-
         elif self.dataset_name == 'Compass':
 
             data_id = 42193
 
-        elif self.dataset_name == 'Intersectional-bias-assesment':
+        elif self.dataset_name == 'Student-performance':
+
+            data_id = 42351
+
+        elif self.dataset_name == 'Predict-diagnosis':
 
             data_id = 45040
 
@@ -89,7 +84,13 @@ class BaseDataClass():
 
         self.sensitive_attr = sensitive_attr
 
-        self.target_attr = self.raw_data.target_names
+        if target_feature is None:
+
+            self.target_attr = self.raw_data.target_names
+
+        else:
+
+            self.target_attr = self.target_feature
 
         for col in self.data.columns:
     
