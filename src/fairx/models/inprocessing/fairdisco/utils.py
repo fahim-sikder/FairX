@@ -176,6 +176,26 @@ def loadCompas(dataset, pro_att):
 
     return getDataset(df, S, Y, num_train)
 
+
+def loadPredictDiagnosis(data_module):
+    """
+    Helper fuciton for Predict-diagnosis dataset!
+    """
+    df = data_module.data.copy()
+
+    
+    num_train = int(df.shape[0]*0.8)
+    print('train_size {}, test_size {}'.format(num_train, df.shape[0]-num_train))
+
+    S = (df['Sex'] == 'Male').values.astype(int)
+    del df['Sex']
+    
+    Y = df['Diagnosis'].values.astype(int)
+    del df['Diagnosis']
+    
+
+    return getDataset(df, S, Y, num_train)
+
 def loadBank():
     """
     Bank Marketing: Contains marketing data of a Portuguese bank. Goal predicting term deposit.
@@ -359,6 +379,8 @@ def load_dataset(dataset):
         train_data, test_data, D = loadCompas(dataset, pro_att='sex')
     elif dataset.dataset_name == 'Compass' and dataset.sensitive_attr == 'race_African-American':
         train_data, test_data, D = loadCompas(dataset, pro_att='race_African-American')
+    elif dataset.dataset_name == 'Predict-diagnosis' and dataset.sensitive_attr == 'Sex':
+        train_data, test_data, D = loadPredictDiagnosis(dataset)
     # elif dataset == 'German':
     #     train_data, test_data, D = loadGerman()
     # elif dataset == 'Health':

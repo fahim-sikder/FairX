@@ -3,6 +3,8 @@ from fairx.models.baseclass import BaseModelClass
 
 import torch
 
+import pathlib
+
 from .modules import *
 from .utils import *
 
@@ -34,7 +36,7 @@ class FairDisco(BaseModelClass):
         self.Y_train, self.Y_test = self.train_data.Y.numpy(), self.test_data.Y.numpy()
 
         self.batch_size = batch_size
-        self.epochs = 200
+        self.epochs = epochs
         self.verbose = 100
         
         self.lr = 1e-3
@@ -43,11 +45,15 @@ class FairDisco(BaseModelClass):
         self.h_dim = 64
         self.z_dim = 8
 
-        self.lg_beta = 7
+        self.lg_beta = beta
 
         self.beta = 10**self.lg_beta
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+        folder_name = f'model/'
+
+        pathlib.Path(folder_name).mkdir(parents=True, exist_ok=True) 
 
 
 
