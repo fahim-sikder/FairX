@@ -72,6 +72,8 @@ pip install .
 
 ## Usage
 
+**Beside the following example, please check the `tutorials` folder in the repo!**
+
 ### Dataset loading
 
 ```python
@@ -173,19 +175,32 @@ FairDisco on Color MNIST:
 
 Here color is the `Senstitive attribute`!
 
-Generated sample of all sensitive Attributes.
-
-![Mix ColorMNIST data](fig/mix-cmnist.png)
-
-Generated sample when sensitive Attributes is `red`!
-
-![Red ColorMNIST data](fig/red-cmnist.png)
+![Mix ColorMNIST data](fig/cmnist.png)
 
 <!-- ![Green ColorMNIST data](fig/green-cmnist.png)
 
 ![Blue ColorMNIST data](fig/blue-cmnist.png) -->
 
 #### CelebA
+
+FairDisco on CelebA dataset:
+
+![Celeba](fig/celeba.png)
+
+## Tabular Results
+
+**Dataset: `Predict-diagnosis`, Sensitive_attr: `Sex`**
+
+
+
+| Methods             |   Precision |   Recall |   Accuracy |   F1 Score |    Auroc |   Demographic Parity Ratio |   Equalized Odd Ratio |   Alpha-precision |   Beta-recall |   Authenticity |
+|:--------------------|------------:|---------:|-----------:|-----------:|---------:|---------------------------:|----------------------:|------------------:|--------------:|---------------:|
+| Correlation Remover |    0.93783  | 0.947836 |   0.941212 |   0.942807 | 0.94106  |                   0.700837 |              0.59161  |        n/a        |    n/a        |     n/a        |
+| Threshold Optimizer |    0.940211 | 0.9508   |   0.943939 |   0.945476 | 0.943782 |                   0.938307 |              0.183804 |        n/a        |    n/a        |     n/a        |
+| FairDisco           |    0.561947 | 0.538592 |   0.527727 |   0.550022 | 0.526887 |                   0.956767 |              0.824377 |        n/a        |    n/a        |     n/a        |
+| TabFairGAN          |    0.965393 | 0.964621 |   0.964172 |   0.965007 | 0.964161 |                   0.665885 |              0.713686 |          0.85877  |      0.354679 |       0.586545 |
+| Decaf               |    0.981911 | 0.979143 |   0.977    |   0.980525 | 0.976521 |                   0.552198 |              0.281135 |          0.704436 |      0.32964  |       0.5996   |
+
 
 
 

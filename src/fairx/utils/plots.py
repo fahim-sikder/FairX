@@ -7,6 +7,10 @@ import pandas as pd
 import numpy as np
 import time
 
+import torch
+from torchvision.utils import make_grid
+import torchvision.transforms.functional as FF
+
 import plotly.express as plotly_express
 
 
@@ -149,3 +153,25 @@ def make_3d_plot_fairness_utility(plot_df, x_axis_feature, y_axis_feature, z_axi
         figure.write_image(f'{time.time():.2f}-benchmarking-fig.png')
      
     figure.show()
+
+
+def show_generated_imgs(imgs, img_name, save_fig = False):
+    """
+    Show generated or real images using torchvision grid.
+    
+    Input: imgs, torchvision grid
+            img_name: string, file name to save the figure
+            save_fig: Boolean, if true, figure will be saved
+    """
+    if not isinstance(imgs, list):
+        imgs = [imgs]
+        
+    fig, axs = plt.subplots(ncols=len(imgs), squeeze=False, figsize = (15, 9))
+    for i, img in enumerate(imgs):
+        img = img.detach()
+        img = FF.to_pil_image(img)
+        axs[0, i].imshow(np.asarray(img))
+        axs[0, i].set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+
+    if save_fig:
+        plt.savefig(f'{img_name}.png', dpi=300, transparent = True)
