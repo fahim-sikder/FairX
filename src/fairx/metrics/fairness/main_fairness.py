@@ -40,3 +40,4 @@ class FairnessUtils():
                'Equalized Odd Ratio': eq_odd}
     
         return output
+

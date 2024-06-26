@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from collections import OrderedDict
 from sklearn.compose import ColumnTransformer
 from sklearn.compose import make_column_selector as selector
 from sklearn.impute import SimpleImputer
@@ -146,7 +147,26 @@ class BaseDataClass():
         
         num_tf = self.numeric_transformer.fit_transform(self.num_data)
 
+        self.cat_lens = [i.shape[0] for i in self.categorical_transformer.categories_]
+
+        self.discrete_columns_ordereddict = OrderedDict(zip(self.cat_feat, self.cat_lens))
+
         self.catenated_data = np.hstack((num_tf, cat_tf.toarray()))
+
+        self.sensitive_start_index = len(self.num_feat) + sum(
+            list(self.discrete_columns_ordereddict.values())[:list(self.discrete_columns_ordereddict.keys()).index(self.sensitive_attr)])
+
+        self.len_sensitive_attr_ = self.discrete_columns_ordereddict[list(self.discrete_columns_ordereddict.keys())[list(self.discrete_columns_ordereddict).index(self.sensitive_attr)]]
+
+        ## debugging
+        
+        # print(self.sensitive_start_index)
+
+        # print(self.len_sensitive_attr_)
+
+        # print(self.discrete_columns_ordereddict)
+
+        ##
 
         return self.categorical_transformer, self.numeric_transformer, self.catenated_data
 

@@ -165,6 +165,30 @@ Here, we have compared all the model in our benchmarking tools on Data utility v
 
 ![Fairness vs Data utlity](fig/fairnessvsdata.png)
 
+### Image Results
+
+#### Color MNIST
+
+FairDisco on Color MNIST:
+
+Here color is the `Senstitive attribute`!
+
+Generated sample of all sensitive Attributes.
+
+![Mix ColorMNIST data](fig/mix-cmnist.png)
+
+Generated sample when sensitive Attributes is `red`!
+
+![Red ColorMNIST data](fig/red-cmnist.png)
+
+<!-- ![Green ColorMNIST data](fig/green-cmnist.png)
+
+![Blue ColorMNIST data](fig/blue-cmnist.png) -->
+
+#### CelebA
+
+
+
 More results coming soon!
 
 ## References
