@@ -15,6 +15,10 @@ import torchvision.utils as vutils
 from PIL import Image
 from tqdm import tqdm
 
+from fairx.utils import setSeed
+
+setSeed(2022)
+
 class CelebaLoader():
 
     """

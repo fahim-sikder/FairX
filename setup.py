@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(f"{here}/requirements.txt") as f:
     install_requires_pack = [line.strip() for line in f]
 
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = 'Fairness Benchmarking Tool'
 LONG_DESCRIPTION = 'A Python package to assess and improve fairness of machine learning models.'
 

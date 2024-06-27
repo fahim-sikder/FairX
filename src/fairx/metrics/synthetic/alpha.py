@@ -43,8 +43,12 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import MinMaxScaler
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
+from fairx.utils import setSeed
+
 from .utils import *
 from .OneClass import OneClassLayer
+
+setSeed(2022)
 
 class SyntheticEvaluation():
 

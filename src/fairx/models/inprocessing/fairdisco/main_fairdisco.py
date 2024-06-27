@@ -1,5 +1,6 @@
 from fairx.dataset import BaseDataClass
 from fairx.models.baseclass import BaseModelClass
+from fairx.utils import setSeed
 
 import torch
 
@@ -8,7 +9,7 @@ import pathlib
 from .modules import *
 from .utils import *
 
-
+setSeed(2022)
 
 class FairDisco(BaseModelClass):
 

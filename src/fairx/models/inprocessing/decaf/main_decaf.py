@@ -41,10 +41,14 @@ from synthcity.plugins.core.dataloader import GenericDataLoader
 from fairx.dataset import CustomDataClass
 from fairx.metrics import SyntheticEvaluation
 
+from fairx.utils import setSeed
+
 import warnings
 warnings.filterwarnings('ignore')
 
 import time
+
+setSeed(2022)
 
 class Decaf():
 

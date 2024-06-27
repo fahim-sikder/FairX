@@ -13,12 +13,16 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.datasets import fetch_openml
 
+from fairx.utils import setSeed
+
 import pathlib
 
 import warnings
 warnings.filterwarnings('ignore')
 
 from sklearn.preprocessing import LabelEncoder
+
+setSeed(2022)
 
 class CustomDataClass():
 

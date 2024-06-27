@@ -48,8 +48,12 @@ from fairlearn.preprocessing import CorrelationRemover
 
 from fairx.metrics import FairnessUtils, DataUtilsMetrics
 
+from fairx.utils import setSeed
+
 #####
 
+
+setSeed(2022)
 
 class CorrRemover():
 

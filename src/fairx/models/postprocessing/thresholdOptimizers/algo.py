@@ -45,6 +45,8 @@ from fairlearn.metrics import demographic_parity_ratio, equalized_odds_ratio
 
 from fairx.metrics import DataUtilsMetrics
 
+from fairx.utils import setSeed
+
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split
@@ -52,6 +54,8 @@ import xgboost as xgb
 
 
 #####
+
+setSeed(2022)
 
 
 class ThresholdAlgorithm():

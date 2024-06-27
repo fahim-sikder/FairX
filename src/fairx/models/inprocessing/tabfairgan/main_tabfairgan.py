@@ -60,6 +60,9 @@ from fairx.models.baseclass import BaseModelClass
 
 from fairx.dataset import CustomDataClass
 from fairx.metrics import SyntheticEvaluation
+from fairx.utils import setSeed
+
+setSeed(2022)
 
 
 class TabFairGAN(BaseModelClass):

@@ -1,8 +1,12 @@
+from fairx.utils import setSeed
+
 import xgboost as xgb
 
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score, roc_auc_score
 
 import numpy as np
+
+setSeed(2022)
 
 class DataUtilsMetrics():
     
@@ -29,7 +33,7 @@ class DataUtilsMetrics():
 
         train_x, test_x, train_y, test_y, train_s, test_s = self.dataset
 
-        clf = xgb.XGBClassifier(objective="binary:logistic", random_state=42, enable_categorical = self.enable_categorical)
+        clf = xgb.XGBClassifier(objective="binary:logistic", enable_categorical = self.enable_categorical)
 
         clf = clf.fit(train_x, train_y)
         
