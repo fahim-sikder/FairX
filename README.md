@@ -1,8 +1,26 @@
 # FairX: A comprehensive benchmarking tool for model analysis using fairness, utility, and explainability
 
-Fairness Benchmarking toolkit!
+<h1 align="center">
+    Fairness Benchmarking toolkit! 
+</h1>
+
+<h3 align="center">
+    Accepted at AEQUITAS 2024: Workshop on Fairness and Bias in AI | co-located with ECAI 2023, Santiago de Compostela, Spain
+</h3>
+
+
+
+<div align="center">
+
+![Last Commit](https://img.shields.io/github/last-commit/fahim-sikder/FairX/main)
+
+</div>
+
 
 This includes data loader, custom dataset support, different fairness models, and wide range of evaluations. 
+
+
+
 
 ![FairX](fig/fairx-extended.png)
 
@@ -205,6 +223,20 @@ FairDisco on CelebA dataset:
 
 
 More results coming soon!
+
+## Citation
+
+If you use our benchmark, please cite our work.
+
+```bibtex
+@article{sikder2024fairx,
+  title={FairX: A comprehensive benchmarking tool for model analysis using fairness, utility, and explainability},
+  author={Sikder, Md Fahim and Ramachandranpillai, Resmi and de Leng, Daniel and Heintz, Fredrik},
+  journal={arXiv preprint arXiv:2406.14281},
+  year={2024}
+}
+```
+
 
 ## References
 
