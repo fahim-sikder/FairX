@@ -5,7 +5,7 @@
 </h1>
 
 <h3 align="center">
-    Accepted at AEQUITAS 2024: Workshop on Fairness and Bias in AI | co-located with ECAI 2023, Santiago de Compostela, Spain
+    Accepted at AEQUITAS 2024: Workshop on Fairness and Bias in AI | co-located with ECAI 2024, Santiago de Compostela, Spain
 </h3>
 
 
