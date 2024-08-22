@@ -13,6 +13,8 @@
 <div align="center">
 
 ![Last Commit](https://img.shields.io/github/last-commit/fahim-sikder/FairX/main)
+![Build](https://img.shields.io/github/actions/workflow/status/fahim-sikder/FairX/python-package.yml)
+![License](https://img.shields.io/github/license/fahim-sikder/FairX)
 
 </div>
 
