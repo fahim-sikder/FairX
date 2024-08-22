@@ -66,7 +66,7 @@ class CelebaLoader():
         
         for index, row in tqdm(attribute_file.iterrows()):
             
-            image = Image.open(f'{data_dir}/img_align_celeba/img_align_celeba/'+row['image_id'])
+            image = Image.open(f'{self.data_dir}/img_align_celeba/img_align_celeba/'+row['image_id'])
     
             tensor = transform(image)
             
