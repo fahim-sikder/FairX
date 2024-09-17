@@ -12,7 +12,7 @@
 
 <div align="center">
 
-[![python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://www.python.org/)
+[![python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue.svg)](https://www.python.org/)
 ![Build](https://img.shields.io/github/actions/workflow/status/fahim-sikder/FairX/python-package.yml)
 ![License](https://img.shields.io/github/license/fahim-sikder/FairX)
 
