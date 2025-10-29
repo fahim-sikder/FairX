@@ -5,7 +5,7 @@
 </h1>
 
 <h3 align="center">
-    Accepted at AEQUITAS 2024: Workshop on Fairness and Bias in AI | co-located with ECAI 2024, Santiago de Compostela, Spain
+    Proceedings of the 2nd Workshop on Fairness and Bias in AI, co-located with 27th European Conference on Artificial Intelligence (ECAI 2024)
 </h3>
 
 
@@ -26,6 +26,9 @@ This includes data loader, custom dataset support, different fairness models, an
 
 ![FairX](fig/fairx-extended.png)
 
+## Latest News (October 2025)
+
+**Our paper titled `Promoting Intersectional Fairness through Knowledge Distilaltion` has been accepted to the ECAI 2025. We will release and merge the codebase with FairX.**
 
 ## Installation
 
@@ -52,6 +55,7 @@ pip install .
 - [x] Decaf
 - [x] FairDisco
 - [ ] FLDGMs
+- [ ] Promoting Intersectional Fairness through KD
 ### Post-processing
 
 - [x] Threshold Optimizers
@@ -231,11 +235,32 @@ More results coming soon!
 If you use our benchmark, please cite our work.
 
 ```bibtex
-@article{sikder2024fairx,
-  title={FairX: A comprehensive benchmarking tool for model analysis using fairness, utility, and explainability},
-  author={Sikder, Md Fahim and Ramachandranpillai, Resmi and de Leng, Daniel and Heintz, Fredrik},
-  journal={arXiv preprint arXiv:2406.14281},
-  year={2024}
+@inproceedings{sikder2024fairx,
+	title={FairX: A comprehensive benchmarking tool for model analysis using fairness, utility, and eXplainability},
+	author={Sikder, Md Fahim and Ramachandranpillai, Resmi and de Leng, Daniel and Heintz, Fredrik},
+	booktitle={Proceedings of the 2nd Workshop on Fairness and Bias in AI, co-located with 27th European Conference on Artificial Intelligence (ECAI 2024)},
+	year={2024},
+	organization={CEUR-WS.org/Vol-3808}
+}
+```
+```bibtex
+@incollection{ramachandranpillai2023fair,
+  title={Fair Latent Deep Generative Models (FLDGMs) for Syntax-Agnostic and Fair Synthetic Data Generation},
+  author={Ramachandranpillai, Resmi and Sikder, Md Fahim and Heintz, Fredrik},
+  booktitle={ECAI 2023},
+  pages={1938--1945},
+  year={2023},
+  publisher={IOS Press}
+}
+```
+```bibtex
+@incollection{fahimpromoting2025,
+  title={Promoting Intersectional Fairness Through Knowledge Distillation},
+  author={Sikder, Md Fahim and Ramachandranpillai, Resmi and De Leng, Daniel and Heintz, Fredrik},
+  booktitle={ECAI 2025},
+  pages={3427--3434},
+  year={2025},
+  publisher={IOS Press}
 }
 ```
 
